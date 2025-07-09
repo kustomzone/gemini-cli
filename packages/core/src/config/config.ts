@@ -45,6 +45,10 @@ import {
   DEFAULT_GEMINI_FLASH_MODEL,
 } from './models.js';
 import { ClearcutLogger } from '../telemetry/clearcut-logger/clearcut-logger.js';
+import {
+  BackgroundAgentManager,
+  loadBackgroundAgentManager,
+} from '../background/manager.js';
 
 export enum ApprovalMode {
   DEFAULT = 'default',
@@ -125,6 +129,7 @@ export interface ConfigParameters {
   toolCallCommand?: string;
   mcpServerCommand?: string;
   mcpServers?: Record<string, MCPServerConfig>;
+  backgroundAgents?: Record<string, MCPServerConfig>;
   userMemory?: string;
   geminiMdFileCount?: number;
   approvalMode?: ApprovalMode;
@@ -153,7 +158,8 @@ export interface ConfigParameters {
 }
 
 export class Config {
-  private toolRegistry!: ToolRegistry;
+  private toolRegistry?: ToolRegistry;
+  private backgroundAgentManager?: BackgroundAgentManager;
   private readonly sessionId: string;
   private contentGeneratorConfig!: ContentGeneratorConfig;
   private readonly embeddingModel: string;
@@ -168,6 +174,9 @@ export class Config {
   private readonly toolCallCommand: string | undefined;
   private readonly mcpServerCommand: string | undefined;
   private readonly mcpServers: Record<string, MCPServerConfig> | undefined;
+  private readonly backgroundAgents:
+    | Record<string, MCPServerConfig>
+    | undefined;
   private userMemory: string;
   private geminiMdFileCount: number;
   private approvalMode: ApprovalMode;
@@ -215,6 +224,7 @@ export class Config {
     this.toolCallCommand = params.toolCallCommand;
     this.mcpServerCommand = params.mcpServerCommand;
     this.mcpServers = params.mcpServers;
+    this.backgroundAgents = params.backgroundAgents;
     this.userMemory = params.userMemory ?? '';
     this.geminiMdFileCount = params.geminiMdFileCount ?? 0;
     this.approvalMode = params.approvalMode ?? ApprovalMode.DEFAULT;
@@ -270,6 +280,10 @@ export class Config {
     if (this.getCheckpointingEnabled()) {
       await this.getGitService();
     }
+    this.backgroundAgentManager = await loadBackgroundAgentManager(
+      this.backgroundAgents,
+      this.debugMode,
+    );
     this.toolRegistry = await this.createToolRegistry();
   }
 
@@ -357,7 +371,7 @@ export class Config {
   }
 
   getToolRegistry(): Promise<ToolRegistry> {
-    return Promise.resolve(this.toolRegistry);
+    return Promise.resolve(this.toolRegistry!);
   }
 
   getDebugMode(): boolean {
@@ -393,6 +407,10 @@ export class Config {
 
   getMcpServers(): Record<string, MCPServerConfig> | undefined {
     return this.mcpServers;
+  }
+
+  getBackgroundAgentManager(): BackgroundAgentManager | undefined {
+    return this.backgroundAgentManager;
   }
 
   getUserMemory(): string {
