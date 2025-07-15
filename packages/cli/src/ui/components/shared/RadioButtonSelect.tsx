@@ -39,6 +39,8 @@ export interface RadioButtonSelectProps<T> {
   showScrollArrows?: boolean;
   /** The maximum number of items to show at once. */
   maxItemsToShow?: number;
+  /** Whether to show numbers next to items. */
+  showNumbers?: boolean;
 }
 
 /**
@@ -55,6 +57,7 @@ export function RadioButtonSelect<T>({
   isFocused,
   showScrollArrows = false,
   maxItemsToShow = 10,
+  showNumbers = true,
 }: RadioButtonSelectProps<T>): React.JSX.Element {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -115,7 +118,7 @@ export function RadioButtonSelect<T>({
       }
 
       // Handle numeric input for selection
-      if (/^[0-9]$/.test(input)) {
+      if (showNumbers && /^[0-9]$/.test(input)) {
         if (numberInputTimer.current) {
           clearTimeout(numberInputTimer.current);
         }
@@ -175,7 +178,11 @@ export function RadioButtonSelect<T>({
         return (
           <Box key={item.label} alignItems="center">
             <Box marginRight={1} flexShrink={0}>
-              <Text color={textColor}>{itemNumberText}</Text>
+              <Text color={textColor}>
+                {showNumbers
+                  ? itemNumberText
+                  : ' '.repeat(itemNumberText.length)}
+              </Text>
             </Box>
             <Box minWidth={2} flexShrink={0}>
               <Text color={isSelected ? Colors.AccentGreen : Colors.Foreground}>
