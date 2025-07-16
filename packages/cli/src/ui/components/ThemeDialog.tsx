@@ -173,11 +173,19 @@ export function ThemeDialog({
     availableTerminalHeight -
     PREVIEW_PANE_FIXED_VERTICAL_SPACE -
     (includePadding ? 2 : 0) * 2;
-  // Give slightly more space to the code block as it is 3 lines longer.
-  const diffHeight = availableTerminalHeightCodeBlock;
-  const codeBlockHeight = Math.ceil(availableTerminalHeightCodeBlock / 2) + 1;
+
+  // Subtract margin between code blocks from available height.
+  const availableHeightForPanes = Math.max(
+    0,
+    availableTerminalHeightCodeBlock - 1,
+  );
+
+  // The code block is slightly longer than the diff, so give it more space.
+  const codeBlockHeight = Math.ceil(availableHeightForPanes * 0.6);
+  const diffHeight = Math.floor(availableHeightForPanes * 0.4);
+
   let themeType = themeManager.getActiveTheme().type;
-      themeType = themeType.charAt(0).toUpperCase() + themeType.slice(1);
+  themeType = themeType.charAt(0).toUpperCase() + themeType.slice(1);
   return (
     <Box
       borderStyle="round"
@@ -237,25 +245,25 @@ export function ThemeDialog({
             flexDirection="column"
           >
             {colorizeCode(
-              `# function
--def fibonacci(n):
--    a, b = 0, 1
--    for _ in range(n):
--        a, b = b, a + b
--    return a`,
+              `# A simple python function
+def fibonacci(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a`,
               'python',
               codeBlockHeight,
               colorizeCodeWidth,
             )}
             <Box marginTop={1} />
             <DiffRenderer
-              diffContent={`--- a/old_file.txt
--+++ b/new_file.txt
--@@ -1,4 +1,5 @@
-- This is a context line.
---This line was deleted.
--+This line was added.
--`}
+              diffContent={`--- a/util.py
++++ b/util.py
+@@ -1,3 +1,3 @@
+ def greet(name):
+-    print("Hello, " + name)
++    print(f"Hello, {name}!")
+`}
               availableTerminalHeight={diffHeight}
               terminalWidth={colorizeCodeWidth}
             />
