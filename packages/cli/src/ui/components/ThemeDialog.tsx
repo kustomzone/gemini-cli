@@ -174,9 +174,10 @@ export function ThemeDialog({
     PREVIEW_PANE_FIXED_VERTICAL_SPACE -
     (includePadding ? 2 : 0) * 2;
   // Give slightly more space to the code block as it is 3 lines longer.
-  const diffHeight = Math.floor(availableTerminalHeightCodeBlock / 2) - 1;
+  const diffHeight = availableTerminalHeightCodeBlock;
   const codeBlockHeight = Math.ceil(availableTerminalHeightCodeBlock / 2) + 1;
-
+  let themeType = themeManager.getActiveTheme().type;
+      themeType = themeType.charAt(0).toUpperCase() + themeType.slice(1);
   return (
     <Box
       borderStyle="round"
@@ -225,7 +226,7 @@ export function ThemeDialog({
 
         {/* Right Column: Preview */}
         <Box flexDirection="column" width="55%" paddingLeft={2}>
-          <Text bold>Preview</Text>
+          <Text bold>{themeType} Theme Preview</Text>
           <Box
             borderStyle="single"
             borderColor={Colors.Gray}
