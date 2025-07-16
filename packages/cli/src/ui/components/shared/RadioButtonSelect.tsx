@@ -87,15 +87,10 @@ export function RadioButtonSelect<T>({
 
   useInput(
     (input, key) => {
-      const isNavKey =
-        input === 'k' ||
-        key.upArrow ||
-        input === 'j' ||
-        key.downArrow ||
-        key.return;
+      const isNumeric = showNumbers && /^[0-9]$/.test(input);
 
-      // Clear number input buffer if a non-numeric key is pressed.
-      if (isNavKey && numberInputTimer.current) {
+      // Any key press that is not a digit should clear the number input buffer.
+      if (!isNumeric && numberInputTimer.current) {
         clearTimeout(numberInputTimer.current);
         setNumberInput('');
       }
@@ -120,7 +115,7 @@ export function RadioButtonSelect<T>({
       }
 
       // Handle numeric input for selection.
-      if (showNumbers && /^[0-9]$/.test(input)) {
+      if (isNumeric) {
         if (numberInputTimer.current) {
           clearTimeout(numberInputTimer.current);
         }
