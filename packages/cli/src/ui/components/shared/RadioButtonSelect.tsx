@@ -151,7 +151,6 @@ export function RadioButtonSelect<T>({
         } else {
           // The typed number is out of bounds, clear the buffer
           setNumberInput('');
-
         }
       }
     },
