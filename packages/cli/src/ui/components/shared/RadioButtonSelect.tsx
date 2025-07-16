@@ -132,7 +132,7 @@ export function RadioButtonSelect<T>({
 
         // A single '0' is not a valid selection since items are 1-indexed.
         if (newNumberInput === '0') {
-          numberInputTimer.current = setTimeout(() => setNumberInput(''), 350);
+          numberInputTimer.current = setTimeout(() => setNumberInput(''), 250);
           return;
         }
 
@@ -151,7 +151,7 @@ export function RadioButtonSelect<T>({
             numberInputTimer.current = setTimeout(() => {
               onSelect(targetItem.value);
               setNumberInput('');
-            }, 350); // Debounce time for multi-digit input.
+            }, 250); // Debounce time for multi-digit input.
           }
         } else {
           // The typed number is out of bounds. Clear the buffer after a delay.
@@ -175,11 +175,9 @@ export function RadioButtonSelect<T>({
         const itemIndex = scrollOffset + index;
         const isSelected = activeIndex === itemIndex;
 
-        let textColor = Colors.Comment;
+        let textColor = Colors.Gray;
         if (isSelected) {
           textColor = Colors.AccentGreen;
-        } else if (item.disabled) {
-          textColor = Colors.Gray;
         }
 
         const numberColumnWidth = String(items.length).length;
