@@ -184,12 +184,12 @@ export function RadioButtonSelect<T>({
 
         return (
           <Box key={item.label} alignItems="center">
-            <Box marginRight={1} flexShrink={0}>
-              <Text color={textColor}>
-                {showNumbers
-                  ? itemNumberText
-                  : ' '.repeat(itemNumberText.length)}
-              </Text>
+            <Box
+              marginRight={1}
+              flexShrink={0}
+              minWidth={itemNumberText.length}
+            >
+              <Text color={textColor}>{showNumbers ? itemNumberText : ''}</Text>
             </Box>
             <Box minWidth={2} flexShrink={0}>
               <Text color={isSelected ? Colors.AccentGreen : Colors.Foreground}>
