@@ -149,8 +149,9 @@ export function RadioButtonSelect<T>({
             }, 250); // Debounce time for multi-digit input.
           }
         } else {
-          // The typed number is out of bounds. Clear the buffer after a delay.
-          numberInputTimer.current = setTimeout(() => setNumberInput(''), 500);
+          // The typed number is out of bounds, clear the buffer
+          setNumberInput('');
+
         }
       }
     },
