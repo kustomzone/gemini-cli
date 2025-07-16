@@ -175,9 +175,11 @@ export function RadioButtonSelect<T>({
         const itemIndex = scrollOffset + index;
         const isSelected = activeIndex === itemIndex;
 
-        let textColor = Colors.Gray;
+        let textColor = Colors.Foreground;
         if (isSelected) {
           textColor = Colors.AccentGreen;
+        } else if (item.disabled) {
+          textColor = Colors.Gray;
         }
 
         const numberColumnWidth = String(items.length).length;
