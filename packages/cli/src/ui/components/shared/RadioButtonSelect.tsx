@@ -76,27 +76,27 @@ export function RadioButtonSelect<T>({
     }
   }, [activeIndex, items.length, scrollOffset, maxItemsToShow]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (numberInputTimer.current) {
         clearTimeout(numberInputTimer.current);
       }
-    };
-  }, []);
+    },
+    [],
+  );
 
   useInput(
     (input, key) => {
-      // Clear number input buffer if a non-numeric key is pressed that we handle elsewhere.
-      if (
+      const isNavKey =
         input === 'k' ||
         key.upArrow ||
         input === 'j' ||
         key.downArrow ||
-        key.return
-      ) {
-        if (numberInputTimer.current) {
-          clearTimeout(numberInputTimer.current);
-        }
+        key.return;
+
+      // Clear number input buffer if a non-numeric key is pressed.
+      if (isNavKey && numberInputTimer.current) {
+        clearTimeout(numberInputTimer.current);
         setNumberInput('');
       }
 
@@ -106,18 +106,20 @@ export function RadioButtonSelect<T>({
         onHighlight?.(items[newIndex]!.value);
         return;
       }
+
       if (input === 'j' || key.downArrow) {
         const newIndex = activeIndex < items.length - 1 ? activeIndex + 1 : 0;
         setActiveIndex(newIndex);
         onHighlight?.(items[newIndex]!.value);
         return;
       }
+
       if (key.return) {
         onSelect(items[activeIndex]!.value);
         return;
       }
 
-      // Handle numeric input for selection
+      // Handle numeric input for selection.
       if (showNumbers && /^[0-9]$/.test(input)) {
         if (numberInputTimer.current) {
           clearTimeout(numberInputTimer.current);
@@ -128,22 +130,32 @@ export function RadioButtonSelect<T>({
 
         const targetIndex = Number.parseInt(newNumberInput, 10) - 1;
 
+        // A single '0' is not a valid selection since items are 1-indexed.
+        if (newNumberInput === '0') {
+          numberInputTimer.current = setTimeout(() => setNumberInput(''), 350);
+          return;
+        }
+
         if (targetIndex >= 0 && targetIndex < items.length) {
-          setActiveIndex(targetIndex);
           const targetItem = items[targetIndex]!;
+          setActiveIndex(targetIndex);
           onHighlight?.(targetItem.value);
 
-          // After a short delay, select the item. This allows for multi-digit entry.
-          numberInputTimer.current = setTimeout(() => {
+          // If the typed number can't be a prefix for another valid number,
+          // select it immediately. Otherwise, wait for more input.
+          const potentialNextNumber = Number.parseInt(newNumberInput + '0', 10);
+          if (potentialNextNumber > items.length) {
             onSelect(targetItem.value);
             setNumberInput('');
-          }, 250); // 500ms timeout for multi-digit input
+          } else {
+            numberInputTimer.current = setTimeout(() => {
+              onSelect(targetItem.value);
+              setNumberInput('');
+            }, 350); // Debounce time for multi-digit input.
+          }
         } else {
-          // If the typed number is out of bounds, clear the buffer after the timeout
-          // so the user can start over.
-          numberInputTimer.current = setTimeout(() => {
-            setNumberInput('');
-          }, 500);
+          // The typed number is out of bounds. Clear the buffer after a delay.
+          numberInputTimer.current = setTimeout(() => setNumberInput(''), 500);
         }
       }
     },
