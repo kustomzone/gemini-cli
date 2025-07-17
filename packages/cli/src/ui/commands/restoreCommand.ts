@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { promises as fs } from 'fs';
+import * as fs from 'fs/promises';
 import path from 'path';
 import {
   type CommandContext,
@@ -120,6 +120,7 @@ async function restoreAction(
 
 async function completion(
   context: CommandContext,
+  _partialArg: string,
 ): Promise<string[]> {
   const { services } = context;
   const { config } = services;
