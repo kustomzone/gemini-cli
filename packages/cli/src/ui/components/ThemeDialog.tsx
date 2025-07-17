@@ -245,7 +245,7 @@ export function ThemeDialog({
             flexDirection="column"
           >
             {colorizeCode(
-              `# A simple python function
+              `# python function
 def fibonacci(n):
     a, b = 0, 1
     for _ in range(n):
